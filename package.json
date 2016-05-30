@@ -1,0 +1,31 @@
+{
+  "name": "learn-rest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Roughtron/learn-rest"
+  },
+  "author": "Svyatoslav Zytsar",
+  "bugs": {
+    "url": "https://github.com/Roughtron/learn-rest/issues"
+  },
+  "homepage": "https://github.com/Roughtron/learn-rest#readme",
+  "dependencies": {
+    "babel-core": "*",
+    "babel-loader": "*",
+    "babel-preset-es2015": "*",
+    "css-loader": "*",
+    "extract-text-webpack-plugin": "*",
+    "jade": "*",
+    "jade-loader": "*",
+    "style-loader": "*",
+    "stylus": "*",
+    "stylus-loader": "*",
+    "webpack": "*"
+  }
+}
