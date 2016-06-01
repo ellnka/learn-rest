@@ -27,5 +27,8 @@
     "stylus": "*",
     "stylus-loader": "*",
     "webpack": "*"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^2.19.0"
   }
 }
