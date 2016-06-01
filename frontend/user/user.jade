@@ -1,0 +1,23 @@
+mixin user(user)
+  .user
+    td.user__fullname=user.fullName
+    td.user__email=user.email
+    td.user__birthdate #{formatDate(user.birthdate)}
+    td.user__action
+      a.user__action-link(data-id=user._id, href="#") Удалить 
+      a.user__action-link(data-id=user._id, href="#") Редактировать
+
+
+-function formatDate(dateString) {
+  -var date = new Date(dateString);
+  -var dd = date.getDate();
+  -if (dd < 10) dd = '0' + dd;
+
+  -var mm = date.getMonth() + 1;
+  -if (mm < 10) mm = '0' + mm;
+
+  -var yy = date.getFullYear() % 100;
+  -if (yy < 10) yy = '0' + yy;
+
+  -return dd + '.' + mm + '.' + yy;
+-}

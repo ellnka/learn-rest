@@ -1,0 +1,49 @@
+.users-manager
+  width 1000px
+  margin 50px auto
+  
+  &_state_data-received &
+    &__preloader
+      display none
+
+  &__preloader
+    position: relative;
+    width: 5em;
+    height: 5em;
+    margin: 50px auto;
+    font-size: 10px;
+    text-indent: -9999em;
+    border-radius: 50%;
+    background: #000;
+    background: linear-gradient(to right, #000 10%, rgba(0,0,0, 0) 42%);
+    animation: load 1.4s infinite linear;
+    transform: translateZ(0);
+    
+    &:before
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 50%;
+      background: #000;
+      border-radius: 100% 0 0 0;
+      
+    &:after
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      width: 75%;
+      height: 75%;
+      margin: auto;
+      background: #fff;
+      border-radius: 50%;
+
+@keyframes load
+  0%
+    transform: rotate(0deg);
+  100%
+    transform: rotate(360deg);

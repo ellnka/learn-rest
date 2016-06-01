@@ -1,0 +1,11 @@
+include ../user/user
+
+table.users-list.user-list_state_loading
+  tr
+    th Full Name
+    th Email
+    th Birthday
+    th 
+  each item in items
+    tr.users-list__item
+      +user(item)
