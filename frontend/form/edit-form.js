@@ -58,4 +58,4 @@ export default class EditForm {
   }
 }
 
-window.addEventListener('DOMContentLoaded', new EditForm());
+document.addEventListener('DOMContentLoaded', new EditForm());

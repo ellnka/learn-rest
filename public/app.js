@@ -181,7 +181,7 @@
 	exports.default = UsersManager;
 	
 	
-	window.addEventListener('DOMContentLoaded', new UsersManager());
+	document.addEventListener('DOMContentLoaded', new UsersManager());
 
 /***/ },
 /* 3 */
@@ -287,6 +287,8 @@
 	  }, {
 	    key: 'patchUser',
 	    value: function patchUser(e) {
+	      var _this = this;
+	
 	      var data = JSON.parse(e.detail.data),
 	          row = this.container.querySelector('.users-list__item[data-id="' + data._id + '"]');
 	
@@ -296,6 +298,14 @@
 	          cell.innerHTML = field == 'birthdate' ? this.formatDate(data[field]) : data[field];
 	        }
 	      }
+	
+	      this.items.forEach(function (item) {
+	        if (item._id == data._id) {
+	          item.fullName = data.fullName;
+	          item.email = data.email;
+	          item.birthdate = _this.formatDate(data.birthdate);
+	        }
+	      });
 	    }
 	  }, {
 	    key: 'formatDate',
@@ -867,7 +877,7 @@
 	exports.default = EditForm;
 	
 	
-	window.addEventListener('DOMContentLoaded', new EditForm());
+	document.addEventListener('DOMContentLoaded', new EditForm());
 
 /***/ },
 /* 14 */

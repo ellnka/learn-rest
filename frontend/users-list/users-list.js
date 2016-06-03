@@ -80,6 +80,14 @@ export default class UsersList {
         cell.innerHTML = (field == 'birthdate') ? this.formatDate(data[field]) : data[field];
       }
     }
+
+    this.items.forEach(item => {
+      if (item._id == data._id) {
+        item.fullName = data.fullName;
+        item.email = data.email;
+        item.birthdate = this.formatDate(data.birthdate);
+      }
+    });
   }
 
   formatDate(dateString) {
