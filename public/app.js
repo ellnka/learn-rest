@@ -46,12 +46,15 @@
 
 	'use strict';
 	
-	__webpack_require__(8);
+	__webpack_require__(2);
+	
+	__webpack_require__(11);
+	
+	__webpack_require__(13);
 
 /***/ },
 /* 1 */,
-/* 2 */,
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62,11 +65,101 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	__webpack_require__(3);
+	
 	var _usersList = __webpack_require__(4);
 	
 	var _usersList2 = _interopRequireDefault(_usersList);
 	
-	__webpack_require__(7);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var UsersManager = function () {
+	  function UsersManager() {
+	    _classCallCheck(this, UsersManager);
+	
+	    this.container = document.querySelector('.js-users-manager');
+	    this.preloader = document.querySelector('.js-users-manager-preloader');
+	
+	    this.url = 'http://test-api.javascript.ru/v1/roughtron/users/?delay=1000';
+	
+	    this.dataReceivedClass = 'users-manager_state_data-received';
+	
+	    this.init();
+	  }
+	
+	  _createClass(UsersManager, [{
+	    key: 'init',
+	    value: function init() {
+	      this.sendRequest('GET');
+	    }
+	  }, {
+	    key: 'sendRequest',
+	    value: function sendRequest(type, data) {
+	      var _this = this;
+	
+	      var xhr = new XMLHttpRequest();
+	
+	      xhr.open(type, this.url);
+	
+	      xhr.send();
+	
+	      xhr.onreadystatechange = function () {
+	        if (xhr.readyState != 4) return;
+	
+	        if (xhr.status != 200) {
+	          console.log(xhr.status + ': ' + xhr.statusText);
+	        } else {
+	          _this.hidePreloader();
+	          _this.render(JSON.parse(xhr.responseText));
+	        }
+	      };
+	    }
+	  }, {
+	    key: 'hidePreloader',
+	    value: function hidePreloader() {
+	      this.container.classList.add(this.dataReceivedClass);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(items) {
+	      var usersList = new _usersList2.default();
+	      this.container.insertAdjacentHTML("afterBegin", usersList.render(items));
+	    }
+	  }]);
+	
+	  return UsersManager;
+	}();
+	
+	exports.default = UsersManager;
+	
+	
+	window.addEventListener('DOMContentLoaded', new UsersManager());
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _usersList = __webpack_require__(5);
+	
+	var _usersList2 = _interopRequireDefault(_usersList);
+	
+	__webpack_require__(8);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -93,10 +186,10 @@
 	window.addEventListener('load', new UsersList());
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(5);
+	var jade = __webpack_require__(6);
 	
 	module.exports = function template(locals) {
 	var buf = [];
@@ -150,7 +243,7 @@
 	}
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -370,7 +463,7 @@
 	    throw err;
 	  }
 	  try {
-	    str = str || __webpack_require__(6).readFileSync(filename, 'utf8')
+	    str = str || __webpack_require__(7).readFileSync(filename, 'utf8')
 	  } catch (ex) {
 	    rethrow(err, null, lineno)
 	  }
@@ -402,19 +495,19 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -423,82 +516,97 @@
 	  value: true
 	});
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	__webpack_require__(9);
-	
-	var _usersList = __webpack_require__(3);
-	
-	var _usersList2 = _interopRequireDefault(_usersList);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	__webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var UsersManager = function () {
-	  function UsersManager() {
-	    _classCallCheck(this, UsersManager);
+	var Overlay = function Overlay() {
+	  _classCallCheck(this, Overlay);
 	
-	    this.container = document.querySelector('.js-users-manager');
-	    this.preloader = document.querySelector('.js-users-manager-preloader');
+	  this.el = document.querySelector('.js-overlay');
 	
-	    this.url = 'http://test-api.javascript.ru/v1/roughtron/users/?delay=1000';
+	  this.activeClass = 'overlay_state_active';
+	};
 	
-	    this.dataReceivedClass = 'users-manager_state_data-received';
-	
-	    this.init();
-	  }
-	
-	  _createClass(UsersManager, [{
-	    key: 'init',
-	    value: function init() {
-	      this.sendRequest('GET');
-	    }
-	  }, {
-	    key: 'sendRequest',
-	    value: function sendRequest(type, data) {
-	      var _this = this;
-	
-	      var xhr = new XMLHttpRequest();
-	
-	      xhr.open(type, this.url);
-	
-	      xhr.send();
-	
-	      xhr.onreadystatechange = function () {
-	        if (xhr.readyState != 4) return;
-	
-	        if (xhr.status != 200) {
-	          console.log(xhr.status + ': ' + xhr.statusText);
-	        } else {
-	          _this.hidePreloader();
-	          _this.render(JSON.parse(xhr.responseText));
-	        }
-	      };
-	    }
-	  }, {
-	    key: 'hidePreloader',
-	    value: function hidePreloader() {
-	      this.container.classList.add(this.dataReceivedClass);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(items) {
-	      var usersList = new _usersList2.default();
-	      this.container.insertAdjacentHTML("afterBegin", usersList.render(items));
-	    }
-	  }]);
-	
-	  return UsersManager;
-	}();
-	
-	exports.default = UsersManager;
-	
-	
-	window.addEventListener('DOMContentLoaded', new UsersManager());
+	exports.default = Overlay;
 
 /***/ },
-/* 9 */
+/* 10 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	__webpack_require__(12);
+	
+	__webpack_require__(9);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var PopupManager = function PopupManager() {
+	  _classCallCheck(this, PopupManager);
+	
+	  this.currentOpen = null;
+	};
+	
+	exports.default = PopupManager;
+	
+	
+	window.addEventListener('DOMContentLoad', new PopupManager());
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	__webpack_require__(14);
+	
+	__webpack_require__(15);
+	
+	__webpack_require__(16);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var EditForm = function EditForm() {
+	  _classCallCheck(this, EditForm);
+	};
+	
+	exports.default = EditForm;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 16 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin

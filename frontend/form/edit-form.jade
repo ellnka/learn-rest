@@ -1,0 +1,21 @@
+include ../label/label
+include ../text-input/text-input
+
+form.form
+  fieldset.form__fields-group
+    legend.form__title Редактирование пользователя
+    ul.form__fields
+      li.form__fields-item
+        +label({for: 'name', text: 'Имя'})
+        +textInput({name: 'name', id: 'name', type: 'text'})
+
+      li.form__fields-item
+        +label({for: 'email', text: 'Email'})
+        +textInput({name: 'email', id: 'email', type: 'email'})
+
+      li.form__fields-item
+        +label({for: 'birthday', text: 'Дата рождения'})
+        +textInput({name: 'birthday', id: 'birthday', type: 'date'})
+
+      li.form__fields-item
+        +textInput({name: 'submit', id: 'submit', type: 'submit', class: 'form__action'})

@@ -78,5 +78,67 @@
   table-layout: fixed;
   border-collapse: collapse;
 }
+.popup {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  width: 500px;
+  padding: 50px;
+  background: #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transform: translate(-50%, 0);
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background-color: rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity linear 0.3s, z-index linear 0.3s;
+}
+.overlay_state_active {
+  z-index: 100;
+  opacity: 1;
+  overflow: auto;
+}
+.form__title {
+  display: block;
+  width: 100%;
+  margin-bottom: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+.form__fields-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.form__fields {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.form__fields-item {
+  margin-bottom: 15px;
+}
+.form__action {
+  border: none;
+  background: #ccc;
+  outline: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.label {
+  display: block;
+}
+.text-input {
+  width: 100%;
+  height: 30px;
+}
 
 /*# sourceMappingURL=app.css.map*/
