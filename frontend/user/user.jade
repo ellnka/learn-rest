@@ -1,11 +1,10 @@
 mixin user(user)
-  .user
-    td.user__fullname=user.fullName
-    td.user__email=user.email
-    td.user__birthdate #{formatDate(user.birthdate)}
-    td.user__action
-      a.user__action-link(data-id=user._id, href="#") Удалить 
-      a.user__action-link(data-id=user._id, href="#") Редактировать
+  td.user__fullname(data-name="fullName")=user.fullName
+  td.user__email(data-name="email")=user.email
+  td.user__birthdate(data-name="birthdate") #{formatDate(user.birthdate)}
+  td.user__action
+    a.user__action-link.js-action-link(data-action="remove", data-id=user._id, href="#") Удалить 
+    a.user__action-link.js-action-link(data-action="edit", data-id=user._id, href="#") Редактировать
 
 
 -function formatDate(dateString) {
@@ -16,8 +15,7 @@ mixin user(user)
   -var mm = date.getMonth() + 1;
   -if (mm < 10) mm = '0' + mm;
 
-  -var yy = date.getFullYear() % 100;
-  -if (yy < 10) yy = '0' + yy;
+  -var yy = date.getFullYear();
 
-  -return dd + '.' + mm + '.' + yy;
+  -return yy + '-' + mm + '-' + dd;
 -}

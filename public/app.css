@@ -87,7 +87,15 @@
   background: #fff;
   border-radius: 5px;
   box-sizing: border-box;
-  transform: translate(-50%, 0);
+  opacity: 0;
+  transform: translate(-50%, 0) scale(0.5);
+  transition: transform linear 0.3s, opacity linear 0.3s;
+  pointer-events: none;
+}
+.popup_state_active {
+  transform: translate(-50%, 0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
 }
 .overlay {
   position: fixed;

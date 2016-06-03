@@ -7,4 +7,12 @@
   background #fff
   border-radius 5px
   box-sizing border-box
-  transform translate(-50%, 0)
+  opacity 0
+  transform translate(-50%, 0) scale(.5)
+  transition transform linear .3s, opacity linear .3s
+  pointer-events none
+  
+  &_state_active
+    transform translate(-50%, 0) scale(1)
+    opacity 1
+    pointer-events auto

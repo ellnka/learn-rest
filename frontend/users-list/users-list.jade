@@ -1,11 +1,11 @@
 include ../user/user
 
-table.users-list.user-list_state_loading
+table.users-list.js-users-list
   tr
     th Full Name
     th Email
     th Birthday
     th 
   each item in items
-    tr.users-list__item
+    tr.users-list__item.user(data-id=item._id)
       +user(item)

@@ -77,16 +77,22 @@
 	
 	var UsersManager = function () {
 	  function UsersManager() {
+	    var _this = this;
+	
 	    _classCallCheck(this, UsersManager);
 	
 	    this.container = document.querySelector('.js-users-manager');
-	    this.preloader = document.querySelector('.js-users-manager-preloader');
+	    this.preloader = this.container.querySelector('.js-users-manager-preloader');
 	
-	    this.url = 'http://test-api.javascript.ru/v1/roughtron/users/?delay=1000';
+	    this.baseUrl = 'http://test-api.javascript.ru/v1/roughtron/users/';
 	
 	    this.dataReceivedClass = 'users-manager_state_data-received';
 	
 	    this.init();
+	
+	    document.body.addEventListener('sendEditedUser', function (e) {
+	      return _this.sendRequest('PATCH', e.detail.data, e.detail.userId);
+	    });
 	  }
 	
 	  _createClass(UsersManager, [{
@@ -96,14 +102,26 @@
 	    }
 	  }, {
 	    key: 'sendRequest',
-	    value: function sendRequest(type, data) {
-	      var _this = this;
+	    value: function sendRequest(method, data, userId) {
+	      var _this2 = this;
 	
-	      var xhr = new XMLHttpRequest();
+	      var url = this.baseUrl,
+	          xhr = new XMLHttpRequest();
 	
-	      xhr.open(type, this.url);
+	      if (method != 'GET') {
+	        url += userId;
+	      } else {
+	        url += '?delay=1000';
+	      }
 	
-	      xhr.send();
+	      xhr.open(method, url);
+	
+	      if (data) {
+	        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+	        xhr.send(data);
+	      } else {
+	        xhr.send();
+	      }
 	
 	      xhr.onreadystatechange = function () {
 	        if (xhr.readyState != 4) return;
@@ -111,8 +129,21 @@
 	        if (xhr.status != 200) {
 	          console.log(xhr.status + ': ' + xhr.statusText);
 	        } else {
-	          _this.hidePreloader();
-	          _this.render(JSON.parse(xhr.responseText));
+	          switch (method) {
+	            case 'GET':
+	              _this2.hidePreloader();
+	              _this2.render(JSON.parse(xhr.responseText));
+	              break;
+	
+	            case 'PATCH':
+	              var event = new CustomEvent('patchUserSuccess', {
+	                detail: {
+	                  data: xhr.responseText
+	                }
+	              });
+	              document.body.dispatchEvent(event);
+	              break;
+	          }
 	        }
 	      };
 	    }
@@ -126,6 +157,9 @@
 	    value: function render(items) {
 	      var usersList = new _usersList2.default();
 	      this.container.insertAdjacentHTML("afterBegin", usersList.render(items));
+	
+	      var event = new CustomEvent('usersLoaded');
+	      document.body.dispatchEvent(event);
 	    }
 	  }]);
 	
@@ -168,12 +202,105 @@
 	var UsersList = function () {
 	  function UsersList() {
 	    _classCallCheck(this, UsersList);
+	
+	    this.container = null;
+	
+	    this.actionButtonClass = 'js-action-link';
+	
+	    this.items = {};
+	
+	    this.init = this.init.bind(this);
+	    this.patchUser = this.patchUser.bind(this);
+	
+	    document.body.addEventListener('usersLoaded', this.init);
+	    document.body.addEventListener('patchUserSuccess', this.patchUser);
 	  }
 	
 	  _createClass(UsersList, [{
+	    key: 'onClick',
+	    value: function onClick(e) {
+	      var target = e.target;
+	
+	      if (!target.classList.contains(this.actionButtonClass)) return;
+	
+	      var userID = target.getAttribute('data-id');
+	
+	      switch (target.getAttribute('data-action')) {
+	        case 'remove':
+	          this.removeItem(userID);
+	          break;
+	
+	        case 'edit':
+	          this.editItem(userID);
+	      }
+	    }
+	  }, {
+	    key: 'removeItem',
+	    value: function removeItem(id) {
+	      console.log('remove id = ' + id);
+	    }
+	  }, {
+	    key: 'editItem',
+	    value: function editItem(id) {
+	      var event = new CustomEvent('showPopup', {
+	        detail: {
+	          popupClass: '.js-edit-popup'
+	        }
+	      });
+	      document.body.dispatchEvent(event);
+	
+	      var item = this.items.find(function (item) {
+	        return item._id == id;
+	      });
+	      item.birthdate = this.formatDate(item.birthdate);
+	
+	      event = new CustomEvent('startUserEditing', {
+	        detail: {
+	          data: item
+	        }
+	      });
+	      document.body.dispatchEvent(event);
+	    }
+	  }, {
+	    key: 'patchUser',
+	    value: function patchUser(e) {
+	      var data = JSON.parse(e.detail.data),
+	          row = this.container.querySelector('.users-list__item[data-id="' + data._id + '"]');
+	
+	      for (var field in data) {
+	        var cell = row.querySelector('[data-name="' + field + '"]');
+	        if (cell) {
+	          cell.innerHTML = field == 'birthdate' ? this.formatDate(data[field]) : data[field];
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'formatDate',
+	    value: function formatDate(dateString) {
+	      var date = new Date(dateString),
+	          dd = date.getDate();
+	
+	      if (dd < 10) dd = '0' + dd;
+	
+	      var mm = date.getMonth() + 1;
+	      if (mm < 10) mm = '0' + mm;
+	
+	      var yy = date.getFullYear();
+	
+	      return yy + '-' + mm + '-' + dd;
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render(items) {
+	      this.items = Array.from(items);
 	      return (0, _usersList2.default)({ items: items });
+	    }
+	  }, {
+	    key: 'init',
+	    value: function init() {
+	      this.container = document.querySelector('.js-users-list');
+	
+	      this.container.addEventListener('click', this.onClick.bind(this));
 	    }
 	  }]);
 	
@@ -181,9 +308,6 @@
 	}();
 	
 	exports.default = UsersList;
-	
-	
-	window.addEventListener('load', new UsersList());
 
 /***/ },
 /* 5 */
@@ -198,7 +322,7 @@
 	;var locals_for_with = (locals || {});(function (Date, items, undefined) {
 	jade_mixins["user"] = jade_interp = function(user){
 	var block = (this && this.block), attributes = (this && this.attributes) || {};
-	buf.push("<div class=\"user\"><td class=\"user__fullname\">" + (jade.escape(null == (jade_interp = user.fullName) ? "" : jade_interp)) + "</td><td class=\"user__email\">" + (jade.escape(null == (jade_interp = user.email) ? "" : jade_interp)) + "</td><td class=\"user__birthdate\">" + (jade.escape((jade_interp = formatDate(user.birthdate)) == null ? '' : jade_interp)) + "</td><td class=\"user__action\"><a" + (jade.attr("data-id", user._id, true, true)) + " href=\"#\" class=\"user__action-link\">Удалить </a><a" + (jade.attr("data-id", user._id, true, true)) + " href=\"#\" class=\"user__action-link\">Редактировать</a></td></div>");
+	buf.push("<td data-name=\"fullName\" class=\"user__fullname\">" + (jade.escape(null == (jade_interp = user.fullName) ? "" : jade_interp)) + "</td><td data-name=\"email\" class=\"user__email\">" + (jade.escape(null == (jade_interp = user.email) ? "" : jade_interp)) + "</td><td data-name=\"birthdate\" class=\"user__birthdate\">" + (jade.escape((jade_interp = formatDate(user.birthdate)) == null ? '' : jade_interp)) + "</td><td class=\"user__action\"><a data-action=\"remove\"" + (jade.attr("data-id", user._id, true, true)) + " href=\"#\" class=\"user__action-link js-action-link\">Удалить </a><a data-action=\"edit\"" + (jade.attr("data-id", user._id, true, true)) + " href=\"#\" class=\"user__action-link js-action-link\">Редактировать</a></td>");
 	};
 	function formatDate(dateString) {
 	{
@@ -207,12 +331,11 @@
 	if (dd < 10) dd = '0' + dd;
 	var mm = date.getMonth() + 1;
 	if (mm < 10) mm = '0' + mm;
-	var yy = date.getFullYear() % 100;
-	if (yy < 10) yy = '0' + yy;
-	return dd + '.' + mm + '.' + yy;
+	var yy = date.getFullYear();
+	return yy + '-' + mm + '-' + dd;
 	}
 	}
-	buf.push("<table class=\"users-list user-list_state_loading\"><tr><th>Full Name</th><th>Email</th><th>Birthday</th><th> </th></tr>");
+	buf.push("<table class=\"users-list js-users-list\"><tr><th>Full Name</th><th>Email</th><th>Birthday</th><th> </th></tr>");
 	// iterate items
 	;(function(){
 	  var $$obj = items;
@@ -221,7 +344,7 @@
 	    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
 	      var item = $$obj[$index];
 	
-	buf.push("<tr class=\"users-list__item\">");
+	buf.push("<tr" + (jade.attr("data-id", item._id, true, true)) + " class=\"users-list__item user\">");
 	jade_mixins["user"](item);
 	buf.push("</tr>");
 	    }
@@ -231,7 +354,7 @@
 	    for (var $index in $$obj) {
 	      $$l++;      var item = $$obj[$index];
 	
-	buf.push("<tr class=\"users-list__item\">");
+	buf.push("<tr" + (jade.attr("data-id", item._id, true, true)) + " class=\"users-list__item user\">");
 	jade_mixins["user"](item);
 	buf.push("</tr>");
 	    }
@@ -516,19 +639,43 @@
 	  value: true
 	});
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	__webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Overlay = function Overlay() {
-	  _classCallCheck(this, Overlay);
+	var Overlay = function () {
+	  function Overlay() {
+	    _classCallCheck(this, Overlay);
 	
-	  this.el = document.querySelector('.js-overlay');
+	    this.el = document.querySelector('.js-overlay');
 	
-	  this.activeClass = 'overlay_state_active';
-	};
+	    this.activeClass = 'overlay_state_active';
+	
+	    document.body.addEventListener('popupClosing', this.hide.bind(this));
+	    document.body.addEventListener('popupOpening', this.show.bind(this));
+	  }
+	
+	  _createClass(Overlay, [{
+	    key: 'hide',
+	    value: function hide() {
+	      this.el.classList.remove(this.activeClass);
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.el.classList.add(this.activeClass);
+	    }
+	  }]);
+	
+	  return Overlay;
+	}();
 	
 	exports.default = Overlay;
+	
+	
+	window.addEventListener('DOMContentLoad', new Overlay());
 
 /***/ },
 /* 10 */
@@ -546,17 +693,59 @@
 	  value: true
 	});
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	__webpack_require__(12);
 	
 	__webpack_require__(9);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var PopupManager = function PopupManager() {
-	  _classCallCheck(this, PopupManager);
+	var PopupManager = function () {
+	  function PopupManager() {
+	    _classCallCheck(this, PopupManager);
 	
-	  this.currentOpen = null;
-	};
+	    this.currentOpen = null;
+	
+	    this.popupActiveClass = 'popup_state_active';
+	
+	    this.showPopup = this.showPopup.bind(this);
+	    this.closePopup = this.closePopup.bind(this);
+	
+	    document.body.addEventListener('showPopup', this.showPopup);
+	    document.body.addEventListener('patchUserSuccess', this.closePopup);
+	  }
+	
+	  _createClass(PopupManager, [{
+	    key: 'showPopup',
+	    value: function showPopup(e) {
+	      this.closePopup();
+	
+	      var popup = document.querySelector(e.detail.popupClass);
+	
+	      if (popup) {
+	        var event = new CustomEvent('popupOpening');
+	        document.body.dispatchEvent(event);
+	
+	        this.currentOpen = popup;
+	        this.currentOpen.classList.add(this.popupActiveClass);
+	      }
+	    }
+	  }, {
+	    key: 'closePopup',
+	    value: function closePopup() {
+	      if (this.currentOpen) {
+	        var event = new CustomEvent('popupClosing');
+	        document.body.dispatchEvent(event);
+	
+	        this.currentOpen.classList.remove(this.popupActiveClass);
+	        this.currentOpen = null;
+	      }
+	    }
+	  }]);
+	
+	  return PopupManager;
+	}();
 	
 	exports.default = PopupManager;
 	
@@ -579,6 +768,8 @@
 	  value: true
 	});
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	__webpack_require__(14);
 	
 	__webpack_require__(15);
@@ -587,11 +778,53 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var EditForm = function EditForm() {
-	  _classCallCheck(this, EditForm);
-	};
+	var EditForm = function () {
+	  function EditForm() {
+	    _classCallCheck(this, EditForm);
+	
+	    this.container = document.querySelector('.js-edit-form');
+	
+	    this.container.addEventListener('submit', this.onSubmit.bind(this));
+	    document.body.addEventListener('startUserEditing', this.fill.bind(this));
+	  }
+	
+	  _createClass(EditForm, [{
+	    key: 'fill',
+	    value: function fill(e) {
+	      for (var field in e.detail.data) {
+	        if (this.container.elements[field]) {
+	          this.container.elements[field].value = e.detail.data[field];
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'onSubmit',
+	    value: function onSubmit(e) {
+	      e.preventDefault();
+	      var formData = {};
+	      for (var i = 0; i < this.container.elements.length; i++) {
+	        if (this.container.elements[i].type != 'fieldset' && this.container.elements[i].type != 'submit') {
+	          formData[this.container.elements[i].name] = this.container.elements[i].value;
+	        }
+	      }
+	
+	      var event = new CustomEvent('sendEditedUser', {
+	        detail: {
+	          userId: this.container.elements['_id'].value,
+	          data: JSON.stringify(formData)
+	        }
+	      });
+	      document.body.dispatchEvent(event);
+	    }
+	  }]);
+	
+	  return EditForm;
+	}();
 	
 	exports.default = EditForm;
+	
+	
+	window.addEventListener('DOMContentLoaded', new EditForm());
 
 /***/ },
 /* 14 */

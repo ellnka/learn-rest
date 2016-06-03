@@ -1,21 +1,22 @@
 include ../label/label
 include ../text-input/text-input
 
-form.form
+form.form.js-edit-form
   fieldset.form__fields-group
     legend.form__title Редактирование пользователя
+    input(type="hidden", name="_id" value="")
     ul.form__fields
       li.form__fields-item
-        +label({for: 'name', text: 'Имя'})
-        +textInput({name: 'name', id: 'name', type: 'text'})
+        +label({for: 'fullName', text: 'Имя и фамилия'})
+        +textInput({name: 'fullName', id: 'fullName', type: 'text'})
 
       li.form__fields-item
         +label({for: 'email', text: 'Email'})
         +textInput({name: 'email', id: 'email', type: 'email'})
 
       li.form__fields-item
-        +label({for: 'birthday', text: 'Дата рождения'})
-        +textInput({name: 'birthday', id: 'birthday', type: 'date'})
+        +label({for: 'birthdate', text: 'Дата рождения'})
+        +textInput({name: 'birthdate', id: 'birthdate', type: 'date'})
 
       li.form__fields-item
         +textInput({name: 'submit', id: 'submit', type: 'submit', class: 'form__action'})
