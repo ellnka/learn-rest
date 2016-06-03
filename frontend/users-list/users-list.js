@@ -33,11 +33,22 @@ export default class UsersList {
 
       case 'edit':
         this.editItem(userID);
+        break;
     }
   }
 
   removeItem(id) {
-    console.log('remove id = ' + id);
+    if (confirm("Вы уверены?")) {
+      let row = this.container.querySelector(`.users-list__item[data-id="${id}"]`);
+      row.parentNode.removeChild(row);
+
+      let event = new CustomEvent('removeUser', {
+        detail: {
+          id: id
+        }
+      });
+      document.body.dispatchEvent(event);
+    }
   }
 
   editItem(id) {

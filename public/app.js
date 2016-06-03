@@ -90,8 +90,11 @@
 	
 	    this.init();
 	
-	    document.body.addEventListener('sendEditedUser', function (e) {
+	    document.body.addEventListener('patchUser', function (e) {
 	      return _this.sendRequest('PATCH', e.detail.data, e.detail.userId);
+	    });
+	    document.body.addEventListener('removeUser', function (e) {
+	      return _this.sendRequest('DELETE', null, e.detail.id);
 	    });
 	  }
 	
@@ -108,7 +111,7 @@
 	      var url = this.baseUrl,
 	          xhr = new XMLHttpRequest();
 	
-	      if (method != 'GET') {
+	      if (method == 'PATCH' || method == 'DELETE') {
 	        url += userId;
 	      } else {
 	        url += '?delay=1000';
@@ -128,6 +131,15 @@
 	
 	        if (xhr.status != 200) {
 	          console.log(xhr.status + ': ' + xhr.statusText);
+	
+	          if (xhr.status == 400) {
+	            var event = new CustomEvent('editFormValidateError', {
+	              detail: {
+	                data: xhr.responseText
+	              }
+	            });
+	            document.body.dispatchEvent(event);
+	          }
 	        } else {
 	          switch (method) {
 	            case 'GET':
@@ -232,12 +244,23 @@
 	
 	        case 'edit':
 	          this.editItem(userID);
+	          break;
 	      }
 	    }
 	  }, {
 	    key: 'removeItem',
 	    value: function removeItem(id) {
-	      console.log('remove id = ' + id);
+	      if (confirm("Вы уверены?")) {
+	        var row = this.container.querySelector('.users-list__item[data-id="' + id + '"]');
+	        row.parentNode.removeChild(row);
+	
+	        var event = new CustomEvent('removeUser', {
+	          detail: {
+	            id: id
+	          }
+	        });
+	        document.body.dispatchEvent(event);
+	      }
 	    }
 	  }, {
 	    key: 'editItem',
@@ -784,8 +807,11 @@
 	
 	    this.container = document.querySelector('.js-edit-form');
 	
+	    this.inputErrorClass = 'text-input_state_error';
+	
 	    this.container.addEventListener('submit', this.onSubmit.bind(this));
 	    document.body.addEventListener('startUserEditing', this.fill.bind(this));
+	    document.body.addEventListener('editFormValidateError', this.onError.bind(this));
 	  }
 	
 	  _createClass(EditForm, [{
@@ -801,6 +827,7 @@
 	    key: 'onSubmit',
 	    value: function onSubmit(e) {
 	      e.preventDefault();
+	      //FIXME костыли и палки :(
 	      var formData = {};
 	      for (var i = 0; i < this.container.elements.length; i++) {
 	        if (this.container.elements[i].type != 'fieldset' && this.container.elements[i].type != 'submit') {
@@ -808,13 +835,29 @@
 	        }
 	      }
 	
-	      var event = new CustomEvent('sendEditedUser', {
+	      var event = new CustomEvent('patchUser', {
 	        detail: {
 	          userId: this.container.elements['_id'].value,
 	          data: JSON.stringify(formData)
 	        }
 	      });
 	      document.body.dispatchEvent(event);
+	    }
+	  }, {
+	    key: 'onError',
+	    value: function onError(e) {
+	      var errors = JSON.parse(e.detail.data).errors;
+	      for (var field in errors) {
+	        var input = this.container.querySelector('[name="' + field + '"]');
+	        if (input) {
+	          input.classList.add(this.inputErrorClass);
+	
+	          var errorBlock = this.container.querySelector('[name="' + field + '"] + .js-input-error');
+	          if (errorBlock) {
+	            errorBlock.innerHTML = errors[field];
+	          }
+	        }
+	      }
 	    }
 	  }]);
 	

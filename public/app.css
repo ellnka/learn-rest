@@ -141,12 +141,18 @@
   cursor: pointer;
   box-sizing: border-box;
 }
+.form__input-error {
+  color: #f00;
+}
 .label {
   display: block;
 }
 .text-input {
   width: 100%;
   height: 30px;
+}
+.text-input_state_error {
+  border-color: #f00;
 }
 
 /*# sourceMappingURL=app.css.map*/

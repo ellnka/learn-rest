@@ -14,7 +14,8 @@ export default class UsersManager {
 
     this.init();
 
-    document.body.addEventListener('sendEditedUser', e => this.sendRequest('PATCH', e.detail.data, e.detail.userId));
+    document.body.addEventListener('patchUser', e => this.sendRequest('PATCH', e.detail.data, e.detail.userId));
+    document.body.addEventListener('removeUser', e => this.sendRequest('DELETE', null, e.detail.id));
   }
 
   init() {
@@ -25,7 +26,7 @@ export default class UsersManager {
     let url = this.baseUrl,
       xhr = new XMLHttpRequest();
 
-    if (method != 'GET') {
+    if (method == 'PATCH' || method == 'DELETE' ) {
       url += userId;
     } else {
       url += '?delay=1000';
@@ -45,6 +46,15 @@ export default class UsersManager {
 
       if (xhr.status != 200) {
         console.log(xhr.status + ': ' + xhr.statusText);
+
+        if (xhr.status == 400) {
+          let event = new CustomEvent('editFormValidateError', {
+            detail: {
+              data: xhr.responseText
+            }
+          });
+          document.body.dispatchEvent(event);
+        }
       } else {
         switch (method) {
           case 'GET':

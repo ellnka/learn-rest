@@ -9,10 +9,12 @@ form.form.js-edit-form
       li.form__fields-item
         +label({for: 'fullName', text: 'Имя и фамилия'})
         +textInput({name: 'fullName', id: 'fullName', type: 'text'})
+        .form__input-error.js-input-error
 
       li.form__fields-item
         +label({for: 'email', text: 'Email'})
         +textInput({name: 'email', id: 'email', type: 'email'})
+        .form__input-error.js-input-error
 
       li.form__fields-item
         +label({for: 'birthdate', text: 'Дата рождения'})
